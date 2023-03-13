@@ -4,6 +4,7 @@ import sys
 import re
 
 root = os.path.dirname(sys.argv[0])
+needBuild = False if len(sys.argv) < 2 or sys.argv[1] != '-b' else True
 
 print(root)
 
@@ -36,7 +37,13 @@ for i, proj in enumerate(dirList):
         fw.write('add_executable({} {})'.format(nameList[i], ' '.join(source)))
     if not os.path.exists(os.path.join(proj, 'build')):
         os.mkdir(os.path.join(proj, 'build'))
+
+    if len(source) == 0:
+        continue
+
+    nowDir = os.path.dirname(sys.argv[0])
     os.chdir(os.path.join(proj, 'build'))
     os.system('cmake ..')
-    os.system('cmake --build .')
-
+    if needBuild:
+        os.system('cmake --build .')
+    os.chdir(nowDir)
